@@ -38,7 +38,16 @@ module JekyllJupyterNotebook
         html_path = Dir.glob("#{output}/*.html").first
         html = File.read(html_path)
         html.sub!(/\A.*?<\/title>/m, "")
-        html.sub!(/<link.+?href="custom.css">/, "")
+        if (not context["page"]["ipynb_css"].nil?)
+          if (not context["page"]["ipynb_css"].empty?)
+            custom_css = '<link type="text/css" rel="stylesheet" href="'
+            custom_css += context["page"]["ipynb_css"]
+            custom_css += '">'
+            html.sub!(/<link.+?href="custom.css">/, custom_css)
+          end
+        else
+          html.sub!(/<link.+?href="custom.css">/, "")
+        end
         html.sub!(/<\/head>/, "")
         html.sub!(/<body>/, "")
         html.sub!(/<\/body>.*?\z/m, "")
